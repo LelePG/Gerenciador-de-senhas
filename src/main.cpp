@@ -2,14 +2,17 @@
 #include "Funcoes.h"
 using namespace std;
 
-
 int main()
 {
     Funcoes f;
     cout << "Boas vindas ao gerenciador de senhas!" << endl;
     int leitura;
+    
+
+
     do
     {
+        Senha s;
         f.imprimirMenu();
         cin >> leitura;
         switch (leitura)
@@ -19,6 +22,10 @@ int main()
         case 1:
             f.criarSenha();
             break;
+        case 2:
+            
+            s.salvarData();
+        break;
 
         default:
             cout << "Opção inválida" << endl;

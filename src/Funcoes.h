@@ -3,7 +3,49 @@
 #include <vector>
 #include <cstdlib>
 #include <ctime>
+#include <time.h>
+#include <algorithm>
+#include <stdio.h>
+#include <cctype>
 #include "Caracteres.h"
+
+using namespace std;
+class Senha
+{
+private:
+    string senha;
+    string aplicacao;
+    string data;
+
+public:
+    void salvarData()
+    {
+        time_t ttime = time(0);
+        char *dt = ctime(&ttime);
+        this->data = (string)dt;
+    }
+    void setSenha(string str)
+    {
+        this->senha = str;
+    }
+    void setAplicacao(string str)
+    {
+        string::iterator end_pos = std::remove(str.begin(), str.end(), ' ');
+        str.erase(end_pos, str.end());
+
+        for (int i = 0; i < str.length(); i++)
+        {
+            str[i] = tolower(str[i]);
+        }
+
+        this->aplicacao = str;
+    }
+
+    void adicionaNoBanco()
+    { //TODO
+        cout << "a";
+    }
+};
 
 class Funcoes
 {
@@ -86,12 +128,31 @@ public:
     {
         int tamanho;
         bool habilitaMaiuscula, habilitaMinuscula, habilitaNumero, habilitaEspecial;
+
+        Senha senhaAtual;
+        char aplicacao[25];
+        bool salvar;
+
+        string senhaGerada;
+        cout << "Para qual aplicação você quer criar a senha?" << endl;
+        cin.get();
+        cin.getline(aplicacao, 25);
+        senhaAtual.setAplicacao(aplicacao);
         cout << "Qual o tamanho da sua senha?" << endl;
         cin >> tamanho;
         habilitaMaiuscula = habilitarCampo("Quer habilitar letras maiusculas?");
         habilitaMinuscula = habilitarCampo("Quer habilitar letras minusculas?");
         habilitaNumero = habilitarCampo("Quer habilitar numeros?");
         habilitaEspecial = habilitarCampo("Quer habilitar caracteres especiais?");
-        cout << "Sua senha é: " << gerarSenha(tamanho, habilitaMaiuscula, habilitaMinuscula, habilitaNumero, habilitaEspecial) << endl;
+        senhaGerada = gerarSenha(tamanho, habilitaMaiuscula, habilitaMinuscula, habilitaNumero, habilitaEspecial);
+        cout << "Sua senha é: " << senhaGerada << endl;
+        cout << "Deseja salvar sua senha? 1(sim) ou 0(nao)" << endl;
+        cin >> salvar;
+        if (salvar)
+        {
+            senhaAtual.setSenha(senhaGerada);
+            senhaAtual.salvarData();
+            senhaAtual.adicionaNoBanco();
+        }
     }
 };
