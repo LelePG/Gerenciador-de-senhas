@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <stdio.h>
 #include <cctype>
+#include <bits/stdc++.h>
 #include "Caracteres.h"
 
 using namespace std;
@@ -113,15 +114,29 @@ private:
             cout << "Digite 1 para habilitar, caso contrário, digite 0." << endl;
             cin >> habilitar;
         } while ((habilitar != 0) && (habilitar != 1));
+        limpaTela();
         return habilitar;
     }
 
+    void limpaTela(){
+        #ifdef WINDOWS
+            system("cls");
+        #else
+         system("clear");
+    #endif
+    }
+
 public:
-    void imprimirMenu()
+    int imprimirMenu()
     {
+        int leitura;
         cout << "Digite a opção que você deseja:" << endl;
         cout << "0 - Sair da aplicação" << endl;
         cout << "1 - Gerar senha" << endl;
+        cin >> leitura;
+        limpaTela();
+        return leitura;
+
     }
 
     void criarSenha()
@@ -140,6 +155,7 @@ public:
         senhaAtual.setAplicacao(aplicacao);
         cout << "Qual o tamanho da sua senha?" << endl;
         cin >> tamanho;
+        limpaTela();
         habilitaMaiuscula = habilitarCampo("Quer habilitar letras maiusculas?");
         habilitaMinuscula = habilitarCampo("Quer habilitar letras minusculas?");
         habilitaNumero = habilitarCampo("Quer habilitar numeros?");
@@ -154,5 +170,6 @@ public:
             senhaAtual.salvarData();
             senhaAtual.adicionaNoBanco();
         }
+        limpaTela();
     }
 };

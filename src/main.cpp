@@ -13,9 +13,7 @@ int main()
     do
     {
         Senha s;
-        f.imprimirMenu();
-        cin >> leitura;
-        switch (leitura)
+           switch (f.imprimirMenu())
         {
         case 0:
             break;
