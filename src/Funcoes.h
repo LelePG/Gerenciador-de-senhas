@@ -18,6 +18,7 @@
 #include <mysql_driver.h>
 #include "Caracteres.h"
 
+string SENHA_TESTE = "inserir senha";
 using namespace std;
 class Senha
 {
@@ -52,8 +53,36 @@ public:
 
     void adicionaNoBanco()
     { //TODO
-        cout << "a";
+        sql::Driver *driver;
+        sql::Connection *con;
+        sql::Statement *stmt;
+        string usuarioSql, senhaSql;
+
+        cout << "Insira o nome do usuario Mysql:" << endl;
+        cin >> usuarioSql;
+        cout << "Insira a senha do usuario Mysql:" << endl;
+        cin >> senhaSql;
+        
+        driver = get_driver_instance();
+        con = driver->connect("tcp://127.0.0.1:3306", "root", SENHA_TESTE); //Modificar aqui
+        stmt = con->createStatement();
+        try
+        {
+            stmt->execute("use GerenciadorSenhas");
+                   stmt -> execute("insert into senhas (aplicacao, senha, data) values (\"" + this->aplicacao + "\",\"" + this->senha + "\",\"" + this->data + "\")");
+
+        }
+        catch (sql::SQLException &e)
+        {
+            cout << "Houve um problema com seu banco de dados: ";
+            cout << e.what() << endl;
+            return;
+        }
+
+        delete con;
+        delete stmt;
     }
+
 };
 
 class Funcoes
@@ -181,7 +210,7 @@ public:
             senhaAtual.salvarData();
             senhaAtual.adicionaNoBanco();
         }
-        limpaTela();
+        //limpaTela();
     }
 
     void instrucoes()
@@ -212,7 +241,7 @@ public:
         cin >> senhaSql;
         
         driver = get_driver_instance();
-        con = driver->connect("tcp://127.0.0.1:3306", "root", "root"); //Modificar aqui
+        con = driver->connect("tcp://127.0.0.1:3306", "root", SENHA_TESTE); //Modificar aqui
         stmt = con->createStatement();
         try
         {
@@ -236,7 +265,7 @@ public:
 
         try
         {
-            stmt->execute("CREATE TABLE senhas (aplicacao varchar(30), senha varchar(20), data varchar(21))");
+            stmt->execute("CREATE TABLE senhas (aplicacao varchar(30), senha varchar(20), data varchar(30))");
         }
         catch (sql::SQLException &e)
         {
@@ -244,7 +273,7 @@ public:
             cout << e.what() <<endl;
             
         }
-
+        limpaTela();
                 cout << "Banco de dados criado com sucesso." <<endl;
 
 
