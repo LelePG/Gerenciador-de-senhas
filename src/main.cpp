@@ -26,6 +26,17 @@ int main()
         case 3:
             f.criarSenha();
             break;
+        case 4:
+            f.salvarSenhaExistente();
+            break;
+        case 5:
+            f.pegarSenha();
+            break;
+        case 6:
+            f.fazerBackup();
+            break;
+        case 7:
+            f.restaurarBanco();
 
         default:
             cout << "Opção inválida" << endl;
