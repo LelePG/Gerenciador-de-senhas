@@ -8,6 +8,14 @@
 #include <stdio.h>
 #include <cctype>
 #include <bits/stdc++.h>
+#include <mysql/mysql.h>
+#include <mysql_connection.h>
+#include <cppconn/driver.h>
+#include <cppconn/exception.h>
+#include <cppconn/resultset.h>
+#include <cppconn/statement.h>
+#include <cppconn/prepared_statement.h>
+#include <mysql_driver.h>
 #include "Caracteres.h"
 
 using namespace std;
@@ -120,11 +128,11 @@ private:
 
     void limpaTela()
     {
-        #ifdef WINDOWS
-                system("cls");
-        #else
-                system("clear");
-        #endif
+#ifdef WINDOWS
+        system("cls");
+#else
+        system("clear");
+#endif
     }
 
 public:
@@ -134,9 +142,8 @@ public:
         cout << "Digite a opção que você deseja:" << endl;
         cout << "0 - Sair da aplicação" << endl;
         cout << "1 - Ver informações de uso" << endl;
-        cout << "2 - Configurar o banco" << endl;
+        cout << "2 - Criar o banco de dados" << endl;
         cout << "3 - Gerar senha" << endl;
-
 
         cin >> leitura;
         limpaTela();
@@ -177,11 +184,71 @@ public:
         limpaTela();
     }
 
-    void instrucoes(){
-          cout <<"Mostrar instrucoes" << endl;  
+    void instrucoes()
+    {
+        cout << "Se esta é a sua primeira vez utilizando o gerenciador de senhas," << endl;
+        cout << "selecione a opção de criar o banco de dados para iniciar a utilização." << endl;
+        cout << "Após a criação do banco de dados, você pode criar uma senha para uma determinada " << endl;
+        cout << "aplicação, ou consultar as senhas já existentes. Recomenda-se que para a " <<endl;
+        cout << "utilização dessa aplicação, o usuário crie um usuário e senhas próprios para " <<endl;
+        cout << "a utilização da aplicação, e não utilize o usuário mysql padrão." << endl;
+        cout << "Esses usuário e senha serão utilizados para acessar as informações na aplicação." << endl;
+        cout << "Digite c e aperte enter para continuar." << endl;
+        string saida;
+        cin >> saida;
+        limpaTela();
     }
 
-    void configurarBanco(){
-cout<< "onfigurar o banco"<<endl;
+    void configurarBanco()
+    {
+        sql::Driver *driver;
+        sql::Connection *con;
+        sql::Statement *stmt;
+        string usuarioSql, senhaSql;
+
+        cout << "Insira o nome do usuario Mysql:" << endl;
+        cin >> usuarioSql;
+        cout << "Insira a senha do usuario Mysql:" << endl;
+        cin >> senhaSql;
+        
+        driver = get_driver_instance();
+        con = driver->connect("tcp://127.0.0.1:3306", "root", "root"); //Modificar aqui
+        stmt = con->createStatement();
+        try
+        {
+            stmt->execute("Create Database GerenciadorSenhas");
+        }
+        catch (sql::SQLException &e)
+        {
+            cout << "Já existe um banco de dados configurado no seu computador. Deseja sobreescrevê-lo? s/n" << endl;
+            char sobreescrever;
+            cin >> sobreescrever;
+            if (tolower(sobreescrever) == 's')
+            {
+                stmt->execute("drop database GerenciadorSenhas");
+                stmt->execute("Create Database GerenciadorSenhas");
+            }
+            else{
+                cout << "Banco de dados não atualizado" << endl;
+            }
+        }
+        con->setSchema("GerenciadorSenhas");
+
+        try
+        {
+            stmt->execute("CREATE TABLE senhas (aplicacao varchar(30), senha varchar(20), data varchar(21))");
+        }
+        catch (sql::SQLException &e)
+        {
+            cout << "Houve um problema. Erro no programa: ";
+            cout << e.what() <<endl;
+            
+        }
+
+                cout << "Banco de dados criado com sucesso." <<endl;
+
+
+        delete con;
+        delete stmt;
     }
 };

@@ -7,15 +7,15 @@ int main()
     Funcoes f;
     cout << "Boas vindas ao gerenciador de senhas!" << endl;
     int leitura;
-    
-
-
-    do
+    while(true)
     {
         Senha s;
-           switch (f.imprimirMenu())
+        int leitura = f.imprimirMenu();
+           switch (leitura)
         {
         case 0:
+        cout << "Obrigada por usar o gerenciador de senhas!" << endl;
+        return 0;
             break;
         case 1:
             f.instrucoes();
@@ -25,11 +25,13 @@ int main()
         break;
         case 3:
             f.criarSenha();
+            break;
 
         default:
             cout << "Opção inválida" << endl;
         }
+        
 
-    } while (leitura != 0);
+    } 
     return 0;
 }
