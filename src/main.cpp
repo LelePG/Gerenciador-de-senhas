@@ -18,12 +18,13 @@ int main()
         case 0:
             break;
         case 1:
-            f.criarSenha();
+            f.instrucoes();
             break;
         case 2:
-            
-            s.salvarData();
+            f.configurarBanco();
         break;
+        case 3:
+            f.criarSenha();
 
         default:
             cout << "Opção inválida" << endl;

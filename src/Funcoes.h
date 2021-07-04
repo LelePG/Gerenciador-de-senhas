@@ -118,12 +118,13 @@ private:
         return habilitar;
     }
 
-    void limpaTela(){
+    void limpaTela()
+    {
         #ifdef WINDOWS
-            system("cls");
+                system("cls");
         #else
-         system("clear");
-    #endif
+                system("clear");
+        #endif
     }
 
 public:
@@ -132,11 +133,14 @@ public:
         int leitura;
         cout << "Digite a opção que você deseja:" << endl;
         cout << "0 - Sair da aplicação" << endl;
-        cout << "1 - Gerar senha" << endl;
+        cout << "1 - Ver informações de uso" << endl;
+        cout << "2 - Configurar o banco" << endl;
+        cout << "3 - Gerar senha" << endl;
+
+
         cin >> leitura;
         limpaTela();
         return leitura;
-
     }
 
     void criarSenha()
@@ -171,5 +175,13 @@ public:
             senhaAtual.adicionaNoBanco();
         }
         limpaTela();
+    }
+
+    void instrucoes(){
+          cout <<"Mostrar instrucoes" << endl;  
+    }
+
+    void configurarBanco(){
+cout<< "onfigurar o banco"<<endl;
     }
 };
