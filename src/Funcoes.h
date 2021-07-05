@@ -109,11 +109,11 @@ private:
 
     void limpaTela()
     {
-#ifdef WINDOWS
-        system("cls");
-#else
-        system("clear");
-#endif
+        #ifdef WINDOWS
+                system("cls");
+        #else
+                system("clear");
+        #endif
     }
 
 public:
@@ -127,6 +127,8 @@ public:
         cout << "3 - Gerar senha" << endl;
         cout << "4 - Salvar senha existente" << endl;
         cout << "5 - Verificar senha" << endl;
+        cout << "6 - Fazer backup do banco de dados" <<endl;
+        cout << "7 - Restaurar o banco de dados através de um backup" << endl;
 
         cin >> leitura;
         limpaTela();
