@@ -1,58 +1,13 @@
-#include <iostream>
-#include <string>
 #include <vector>
-#include <cstdlib>
-#include <ctime>
-#include <time.h>
 #include <algorithm>
-#include <stdio.h>
-#include <cctype>
-#include <bits/stdc++.h>
-#include <mysql/mysql.h>
-#include <mysql_connection.h>
-#include <cppconn/driver.h>
-#include <cppconn/exception.h>
-#include <cppconn/resultset.h>
-#include <cppconn/statement.h>
-#include <cppconn/prepared_statement.h>
-#include <mysql_driver.h>
+#include "Senha.h"
 #include "Caracteres.h"
 
-string SENHA_TESTE = "";
-using namespace std;
-class Senha
+class Funcoes
 {
 private:
-    string senha;
-    string aplicacao;
-    string data;
-
-public:
-    void salvarData()
+    void adicionaNoBanco(Senha s)
     {
-        time_t ttime = time(0);
-        char *dt = ctime(&ttime);
-        this->data = (string)dt;
-    }
-    void setSenha(string str)
-    {
-        this->senha = str;
-    }
-    void setAplicacao(string str)
-    {
-        string::iterator end_pos = std::remove(str.begin(), str.end(), ' ');
-        str.erase(end_pos, str.end());
-
-        for (int i = 0; i < str.length(); i++)
-        {
-            str[i] = tolower(str[i]);
-        }
-
-        this->aplicacao = str;
-    }
-
-    void adicionaNoBanco()
-    { //TODO
         sql::Driver *driver;
         sql::Connection *con;
         sql::Statement *stmt;
@@ -62,15 +17,17 @@ public:
         cin >> usuarioSql;
         cout << "Insira a senha do usuario Mysql:" << endl;
         cin >> senhaSql;
-        
+
         driver = get_driver_instance();
-        con = driver->connect("tcp://127.0.0.1:3306", "root", SENHA_TESTE); //Modificar aqui
+        con = driver->connect("tcp://127.0.0.1:3306", usuarioSql, senhaSql);
         stmt = con->createStatement();
+
+        limpaTela();
+
         try
         {
             stmt->execute("use GerenciadorSenhas");
-                   stmt -> execute("insert into senhas (aplicacao, senha, data) values (\"" + this->aplicacao + "\",\"" + this->senha + "\",\"" + this->data + "\")");
-
+            stmt->execute("insert into senhas (aplicacao, senha, data) values (\"" + s.getAplicacao() + "\",\"" + s.getSenha() + "\",\"" + s.getData() + "\")");
         }
         catch (sql::SQLException &e)
         {
@@ -83,12 +40,7 @@ public:
         delete stmt;
     }
 
-};
-
-class Funcoes
-{
-private:
-    vector<char> adicionaElementos(vector<char> inserirAqui, vector<char> copiarDaqui)
+    vector<char> concatenaVetoresDeChar(vector<char> inserirAqui, vector<char> copiarDaqui)
     {
         for (vector<char>::iterator it = copiarDaqui.begin(); it != copiarDaqui.end(); it++)
         {
@@ -102,25 +54,10 @@ private:
         Caracteres listaDeLetras;
         vector<char> selecionados = {};
 
-        if (letrasMaiusculas)
-        {
-            selecionados = adicionaElementos(selecionados, listaDeLetras.maiusculas);
-        }
-
-        if (letrasMinusculas)
-        {
-            selecionados = adicionaElementos(selecionados, listaDeLetras.minusculas);
-        }
-
-        if (numeros)
-        {
-            selecionados = adicionaElementos(selecionados, listaDeLetras.numeros);
-        }
-
-        if (especiais)
-        {
-            selecionados = adicionaElementos(selecionados, listaDeLetras.especiais);
-        }
+        selecionados = letrasMaiusculas ? concatenaVetoresDeChar(selecionados, listaDeLetras.maiusculas) : selecionados;
+        selecionados = letrasMinusculas ? concatenaVetoresDeChar(selecionados, listaDeLetras.minusculas) : selecionados;
+        selecionados = numeros ? concatenaVetoresDeChar(selecionados, listaDeLetras.numeros) : selecionados;
+        selecionados = especiais ? concatenaVetoresDeChar(selecionados, listaDeLetras.especiais) : selecionados;
 
         return selecionados;
     }
@@ -130,6 +67,7 @@ private:
         vector<char> componentesSenha = selecionarSimbolos(letrasMinusculas, letrasMaiusculas, numeros, caracteresEspeciais);
         if (componentesSenha.size() == 0)
         {
+            cout << "Houve um problema e sua senha nao foi criada";
             return "Houve um problema e sua senha nao foi criada";
         }
         string senha;
@@ -162,9 +100,9 @@ private:
         do
         {
             cout << "Digite s para confirmar, caso contrário, digite n." << endl;
-            cin >>confirmar;
+            cin >> confirmar;
         } while ((tolower(confirmar) != 's') && (tolower(confirmar) != 'n'));
-        int retorno = tolower(confirmar) == 's' ?1 :0;
+        int retorno = tolower(confirmar) == 's' ? 1 : 0;
         limpaTela();
         return retorno;
     }
@@ -218,15 +156,12 @@ public:
         habilitaEspecial = habilitarCampo("Quer habilitar caracteres especiais?");
         senhaGerada = gerarSenha(tamanho, habilitaMaiuscula, habilitaMinuscula, habilitaNumero, habilitaEspecial);
         cout << "Sua senha é: " << senhaGerada << endl;
-        cout << "Deseja salvar sua senha? 1(sim) ou 0(nao)" << endl;
-        cin >> salvar;
-        if (salvar)
+        if (confirmarOpcao("Deseja Salvar sua senha?"))
         {
             senhaAtual.setSenha(senhaGerada);
             senhaAtual.salvarData();
-            senhaAtual.adicionaNoBanco();
+            adicionaNoBanco(senhaAtual);
         }
-        //limpaTela();
     }
 
     void instrucoes()
@@ -234,8 +169,8 @@ public:
         cout << "Se esta é a sua primeira vez utilizando o gerenciador de senhas," << endl;
         cout << "selecione a opção de criar o banco de dados para iniciar a utilização." << endl;
         cout << "Após a criação do banco de dados, você pode criar uma senha para uma determinada " << endl;
-        cout << "aplicação, ou consultar as senhas já existentes. Recomenda-se que para a " <<endl;
-        cout << "utilização dessa aplicação, o usuário crie um usuário e senhas próprios para " <<endl;
+        cout << "aplicação, ou consultar as senhas já existentes. Recomenda-se que para a " << endl;
+        cout << "utilização dessa aplicação, o usuário crie um usuário e senhas próprios para " << endl;
         cout << "a utilização da aplicação, e não utilize o usuário mysql padrão." << endl;
         cout << "Esses usuário e senha serão utilizados para acessar as informações na aplicação." << endl;
         cout << "Digite c e aperte enter para continuar." << endl;
@@ -255,9 +190,9 @@ public:
         cin >> usuarioSql;
         cout << "Insira a senha do usuario Mysql:" << endl;
         cin >> senhaSql;
-        
+
         driver = get_driver_instance();
-        con = driver->connect("tcp://127.0.0.1:3306", "root", SENHA_TESTE); //Modificar aqui
+        con = driver->connect("tcp://127.0.0.1:3306", usuarioSql, senhaSql);
         stmt = con->createStatement();
         try
         {
@@ -273,7 +208,8 @@ public:
                 stmt->execute("drop database GerenciadorSenhas");
                 stmt->execute("Create Database GerenciadorSenhas");
             }
-            else{
+            else
+            {
                 cout << "Banco de dados não atualizado" << endl;
             }
         }
@@ -286,41 +222,42 @@ public:
         catch (sql::SQLException &e)
         {
             cout << "Houve um problema. Erro no programa: ";
-            cout << e.what() <<endl;
-            
+            cout << e.what() << endl;
         }
         limpaTela();
-                cout << "Banco de dados criado com sucesso." <<endl;
-
+        cout << "Banco de dados criado com sucesso." << endl;
 
         delete con;
         delete stmt;
     }
-    void salvarSenhaExistente(){
+    void salvarSenhaExistente()
+    {
         Senha s;
         char aplicacao[25], senha[20];
         cout << "Qual é a aplicação desta senha?" << endl;
         cin.get();
         cin.getline(aplicacao, 25);
         s.setAplicacao(aplicacao);
-        cout << "Qual é a senha que deseja salvar?" <<endl;
-        cin.getline(senha,20);
+        cout << "Qual é a senha que deseja salvar?" << endl;
+        cin.getline(senha, 20);
         s.setSenha(senha);
 
-        if (confirmarOpcao("A senha da aplicação " + (string)aplicacao+" é "+ (string)senha + ".")){
-                    s.salvarData();
-                s.adicionaNoBanco();
+        if (confirmarOpcao("A senha da aplicação " + (string)aplicacao + " é " + (string)senha + "."))
+        {
+            s.salvarData();
+            adicionaNoBanco(s);
         }
-
-
+        limpaTela();
+        cout << "Senha salva com sucesso." << endl;
     }
 
-    void pegarSenha(){
-sql::Driver *driver;
+    void pegarSenha()
+    {
+        sql::Driver *driver;
         sql::Connection *con;
         sql::Statement *stmt;
-          sql::ResultSet *res;
-  sql::PreparedStatement *pstmt;
+        sql::ResultSet *res;
+        sql::PreparedStatement *pstmt;
         string usuarioSql, senhaSql, aplicacao;
 
         cout << "De qual aplicação você quer recuperar a senha?" << endl;
@@ -330,39 +267,37 @@ sql::Driver *driver;
         cin >> usuarioSql;
         cout << "Insira a senha do usuario Mysql:" << endl;
         cin >> senhaSql;
-        
+
         driver = get_driver_instance();
-        con = driver->connect("tcp://127.0.0.1:3306", "root", SENHA_TESTE); //Modificar aqui
+        con = driver->connect("tcp://127.0.0.1:3306", usuarioSql, senhaSql); //Modificar aqui
         stmt = con->createStatement();
-        stmt -> execute("use GerenciadorSenhas");
+        stmt->execute("use GerenciadorSenhas");
         try
         {
             pstmt = con->prepareStatement("select * from senhas where aplicacao = \"" + aplicacao + "\"");
-  res = pstmt->executeQuery();
-  while (res -> next()) {
-cout << "A senha da aplicacao " + aplicacao+" é "+ res -> getString("senha")+" e foi criada em " + res -> getString("data")<< endl;
-cout << "Digite c para continuar."<<endl;
-char caracter;
-cin >> caracter;
-}
+            res = pstmt->executeQuery();
+            while (res->next())
+            {
+                cout << "A senha da aplicacao " + aplicacao + " é " + res->getString("senha") + " e foi criada em " + res->getString("data") << endl;
+                cout << "Digite c para continuar." << endl;
+                char caracter;
+                cin >> caracter;
+                limpaTela();
+            }
         }
         catch (sql::SQLException &e)
         {
             cout << e.what();
         }
-        
-
-        
-        
-
-
         delete con;
         delete stmt;
     }
-    void fazerBackup(){
-        cout<<"Não tô pronto ainda.";
+    void fazerBackup()
+    {
+        cout << "Não tô pronto ainda.";
     }
-    void restaurarBanco(){
-        cout <<"Não tõ pronto ainda.";
+    void restaurarBanco()
+    {
+        cout << "Não tõ pronto ainda.";
     }
 };
