@@ -1,5 +1,14 @@
 #include <vector>
 #include <algorithm>
+#include <mysql/mysql.h>
+#include <mysql_connection.h>
+#include <cppconn/driver.h>
+#include <cppconn/exception.h>
+#include <cppconn/resultset.h>
+#include <cppconn/statement.h>
+#include <cppconn/prepared_statement.h>
+#include <mysql_driver.h>
+#include <stdlib.h> 
 #include "Senha.h"
 #include "Caracteres.h"
 
@@ -192,12 +201,12 @@ public:
         cin >> usuarioSql;
         cout << "Insira a senha do usuario Mysql:" << endl;
         cin >> senhaSql;
-
+try
+        {
         driver = get_driver_instance();
         con = driver->connect("tcp://127.0.0.1:3306", usuarioSql, senhaSql);
         stmt = con->createStatement();
-        try
-        {
+        
             stmt->execute("Create Database GerenciadorSenhas");
         }
         catch (sql::SQLException &e)
@@ -262,22 +271,26 @@ public:
         sql::PreparedStatement *pstmt;
         string usuarioSql, senhaSql, aplicacao;
 
-        cout << "De qual aplicação você quer recuperar a senha?" << endl;
-        cin >> aplicacao;
-
         cout << "Insira o nome do usuario Mysql:" << endl;
         cin >> usuarioSql;
         cout << "Insira a senha do usuario Mysql:" << endl;
         cin >> senhaSql;
 
+        cout << "Para qual aplicação você que recuperar a senha?" <<endl;
+        cin >> aplicacao;
+
+        try
+        {
         driver = get_driver_instance();
         con = driver->connect("tcp://127.0.0.1:3306", usuarioSql, senhaSql); //Modificar aqui
         stmt = con->createStatement();
         stmt->execute("use GerenciadorSenhas");
-        try
-        {
+        
             pstmt = con->prepareStatement("select * from senhas where aplicacao = \"" + aplicacao + "\"");
             res = pstmt->executeQuery();
+            if (!res->next()){//se o result set estiver fazio
+                   cout<< "A aplicação não foi encotrada no banco de dados. Tente novamente." <<endl; 
+            }
             while (res->next())
             {
                 cout << "A senha da aplicacao " + aplicacao + " é " + res->getString("senha") + " e foi criada em " + res->getString("data") << endl;
@@ -289,17 +302,53 @@ public:
         }
         catch (sql::SQLException &e)
         {
-            cout << e.what();
+            cout<< "Houve um problema com a sua aplicação: ";
+            cout << e.what() << endl;
         }
         delete con;
         delete stmt;
     }
     void fazerBackup()
     {
-        cout << "Não tô pronto ainda.";
+        
+        string usuarioSql, senhaSql;
+
+        cout << "Insira o nome do usuario Mysql:" << endl;
+        cin >> usuarioSql;
+        cout << "Insira a senha do usuario Mysql:" << endl;
+        cin >> senhaSql;
+
+        string comando = "mysqldump -u "+usuarioSql+" -p"+senhaSql+" GerenciadorSenhas > BackupSenhas.sql ";            
+            system((char *)comando.c_str());
+         
+        
     }
     void restaurarBanco()
     {
-        cout << "Não tõ pronto ainda.";
+        sql::Driver *driver;
+        sql::Connection *con;
+        sql::Statement *stmt;
+        string usuarioSql, senhaSql;
+
+        cout << "Insira o nome do usuario Mysql:" << endl;
+        cin >> usuarioSql;
+        cout << "Insira a senha do usuario Mysql:" << endl;
+        cin >> senhaSql;
+       
+try
+        {
+        driver = get_driver_instance();
+        con = driver->connect("tcp://127.0.0.1:3306", usuarioSql, senhaSql);
+        stmt = con->createStatement();
+        
+            stmt->execute("Create Database GerenciadorSenhas");
+        }
+        catch (sql::SQLException &e)
+        {
+            cout << "Houve um problema com a aplicação. ";
+            cout<< e.what();
+        }
+        string comando = "mysql -u "+usuarioSql+" -p"+senhaSql+" GerenciadorSenhas < BackupSenhas.sql ";            
+            system((char *)comando.c_str());
     }
 };
