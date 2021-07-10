@@ -69,8 +69,13 @@ private:
         return selecionados;
     }
 
-    string gerarSenha(int tamanho, bool letrasMinusculas = true, bool letrasMaiusculas = true, bool numeros = true, bool caracteresEspeciais = true)
+    string gerarSenha(int tamanho)
     {
+        bool letrasMinusculas = habilitarCampo("Quer habilitar letras maiusculas?");
+        bool letrasMaiusculas = habilitarCampo("Quer habilitar letras minusculas?");
+        bool numeros = habilitarCampo("Quer habilitar numeros?");
+        bool caracteresEspeciais = habilitarCampo("Quer habilitar caracteres especiais?");
+
         vector<char> componentesSenha = selecionarSimbolos(letrasMinusculas, letrasMaiusculas, numeros, caracteresEspeciais);
         if (componentesSenha.size() == 0)
         {
@@ -155,7 +160,6 @@ public:
     void criarSenha()
     {
         int tamanho;
-        bool habilitaMaiuscula, habilitaMinuscula, habilitaNumero, habilitaEspecial;
         Senha senhaAtual;
         string senhaGerada;
 
@@ -163,11 +167,7 @@ public:
         cout << "Qual o tamanho da sua senha?" << endl;
         cin >> tamanho;
         limpaTela();
-        habilitaMaiuscula = habilitarCampo("Quer habilitar letras maiusculas?");
-        habilitaMinuscula = habilitarCampo("Quer habilitar letras minusculas?");
-        habilitaNumero = habilitarCampo("Quer habilitar numeros?");
-        habilitaEspecial = habilitarCampo("Quer habilitar caracteres especiais?");
-        senhaGerada = gerarSenha(tamanho, habilitaMaiuscula, habilitaMinuscula, habilitaNumero, habilitaEspecial);
+        senhaGerada = gerarSenha(tamanho);
         cout << "Sua senha é: " << senhaGerada << endl;
         if (confirmarOpcao("Deseja Salvar sua senha?"))
         {
@@ -305,7 +305,77 @@ public:
 
     void alterarSenha()
     {
-        cout << "a";
+        sql::Driver *driver;
+        sql::Connection *con;
+        sql::Statement *stmt;
+        sql::ResultSet *res;
+        sql::PreparedStatement *pstmt;
+        string usuarioSql, senhaSql;
+        Senha s;
+
+        usuarioSql = getpass("Insira o nome do usuario Mysql:");
+        senhaSql = getpass("Insira a senha do usuario Mysql:");
+        s.setAplicacao();
+        try
+        {
+            driver = get_driver_instance();
+            con = driver->connect("tcp://127.0.0.1:3306", usuarioSql, senhaSql);
+            stmt = con->createStatement();
+            stmt->execute("use GerenciadorSenhas");
+
+            pstmt = con->prepareStatement("select * from senhas where aplicacao = \"" + s.getAplicacao() + "\"");
+            res = pstmt->executeQuery();
+            if (!res->next())
+            { //se o result set estiver fazio
+                cout << "A aplicação não possui nenhuma senha registrada. Tente novamente." << endl;
+            }
+            else
+            {
+                cout << "A senha foi encontrada." << endl;
+                if (confirmarOpcao("Deseja criar uma senha com o gerador de senhas da aplicação?"))
+                {
+                    int tamanho;
+                    cout << "Qual o tamanho da sua senha?" << endl;
+                    cin >> tamanho;
+                    s.setSenha(gerarSenha(tamanho));
+                    if (confirmarOpcao("Deseja salvar a senha?"))
+                    {
+                        s.salvarData();
+                        pstmt = con->prepareStatement("update senhas set senha = \"" + s.getSenha() + "\" , data=\"" + s.getData() + "\" where aplicacao = \"" + s.getAplicacao() + "\"");
+                        res = pstmt->executeQuery();
+                        cout << "A senha da aplicação " + s.getAplicacao() + " foi atualizada com sucesso." << endl;
+                    }
+                }
+                else if (confirmarOpcao("Deseja digitar uma senha?"))
+                {
+                    cin.get();
+                    char senha[20];
+                    cout << "Qual é a senha que deseja salvar?" << endl;
+                    cin.getline(senha, 20);
+                    s.setSenha(senha);
+
+                    if (confirmarOpcao("Deseja salvar a senha?"))
+                    {
+                        s.salvarData();
+                        pstmt = con->prepareStatement("update senhas set senha = \"" + s.getSenha() + "\" , data=\"" + s.getData() + "\" where aplicacao = \"" + s.getAplicacao() + "\"");
+                        res = pstmt->executeQuery();
+                        cout << "A senha da aplicação " + s.getAplicacao() + " foi atualizada com sucesso." << endl;
+                    }
+                }
+                else
+                {
+                    cout << "Encerrando operação." << endl;
+                }
+            }
+        }
+        catch (sql::SQLException &e)
+        {
+            cout << "Houve um problema com a sua aplicação: ";
+            cout << e.what() << endl;
+        }
+        continuar();
+        delete con;
+        delete stmt;
     }
 
     void excluirSenha()
@@ -319,8 +389,8 @@ public:
         Senha s;
 
         usuarioSql = getpass("Insira o nome do usuario Mysql:");
-
         senhaSql = getpass("Insira a senha do usuario Mysql:");
+        s.setAplicacao();
         try
         {
             driver = get_driver_instance();
