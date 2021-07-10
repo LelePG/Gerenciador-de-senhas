@@ -24,8 +24,8 @@ private:
 
         cout << "Insira o nome do usuario Mysql:" << endl;
         cin >> usuarioSql;
-        cout << "Insira a senha do usuario Mysql:" << endl;
-        cin >> senhaSql;
+        senhaSql=getpass("Insira a senha do usuario Mysql:");	// yes, that's all you need!
+
 
         driver = get_driver_instance();
         con = driver->connect("tcp://127.0.0.1:3306", usuarioSql, senhaSql);
@@ -143,9 +143,9 @@ public:
         cout << "2 - Criar o banco de dados" << endl;
         cout << "3 - Gerar senha" << endl;
         cout << "4 - Salvar senha existente" << endl;
-        cout << "5 - Acessar uma senha" << endl;
-        cout << "6 - Editar uma senha" << endl;
-        cout << "7 - Excluir uma senha" << endl;
+        cout << "5 - Acessar uma senha existente" << endl;
+        cout << "6 - Editar uma senha existente" << endl;
+        cout << "7 - Excluir uma senha existente" << endl;
         cout << "8 - Fazer backup do banco de dados" << endl;
         cout << "9 - Restaurar o banco de dados através de um backup" << endl;
 
@@ -201,8 +201,8 @@ public:
 
         cout << "Insira o nome do usuario Mysql:" << endl;
         cin >> usuarioSql;
-        cout << "Insira a senha do usuario Mysql:" << endl;
-        cin >> senhaSql;
+        senhaSql=getpass("Insira a senha do usuario Mysql:");	// yes, that's all you need!
+
         try
         {
             driver = get_driver_instance();
@@ -276,8 +276,7 @@ public:
 
         cout << "Insira o nome do usuario Mysql:" << endl;
         cin >> usuarioSql;
-        cout << "Insira a senha do usuario Mysql:" << endl;
-        cin >> senhaSql;
+        senhaSql=getpass("Insira a senha do usuario Mysql:");	// yes, that's all you need!
 
         s.setAplicacao();
         try
@@ -325,8 +324,7 @@ public:
 
         cout << "Insira o nome do usuario Mysql:" << endl;
         cin >> usuarioSql;
-        cout << "Insira a senha do usuario Mysql:" << endl;
-        cin >> senhaSql;
+        senhaSql=getpass("Insira a senha do usuario Mysql:");	// yes, that's all you need!
         s.setAplicacao();
         try
         {
@@ -371,8 +369,8 @@ public:
 
         cout << "Insira o nome do usuario Mysql:" << endl;
         cin >> usuarioSql;
-        cout << "Insira a senha do usuario Mysql:" << endl;
-        cin >> senhaSql;
+        senhaSql=getpass("Insira a senha do usuario Mysql:");	// yes, that's all you need!
+
 
         string comando = "mysqldump -u " + usuarioSql + " -p" + senhaSql + " GerenciadorSenhas > BackupSenhas.sql ";
         system((char *)comando.c_str());
@@ -388,8 +386,7 @@ public:
 
         cout << "Insira o nome do usuario Mysql:" << endl;
         cin >> usuarioSql;
-        cout << "Insira a senha do usuario Mysql:" << endl;
-        cin >> senhaSql;
+        senhaSql=getpass("Insira a senha do usuario Mysql:");	// yes, that's all you need!
 
         try
         {
