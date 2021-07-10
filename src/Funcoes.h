@@ -22,10 +22,8 @@ private:
         sql::Statement *stmt;
         string usuarioSql, senhaSql;
 
-        cout << "Insira o nome do usuario Mysql:" << endl;
-        cin >> usuarioSql;
-        senhaSql=getpass("Insira a senha do usuario Mysql:");	// yes, that's all you need!
-
+        usuarioSql = getpass("Insira o nome do usuario Mysql:");
+        senhaSql = getpass("Insira a senha do usuario Mysql:");
 
         driver = get_driver_instance();
         con = driver->connect("tcp://127.0.0.1:3306", usuarioSql, senhaSql);
@@ -199,9 +197,8 @@ public:
         sql::Statement *stmt;
         string usuarioSql, senhaSql;
 
-        cout << "Insira o nome do usuario Mysql:" << endl;
-        cin >> usuarioSql;
-        senhaSql=getpass("Insira a senha do usuario Mysql:");	// yes, that's all you need!
+        usuarioSql = getpass("Insira o nome do usuario Mysql:");
+        senhaSql = getpass("Insira a senha do usuario Mysql:");
 
         try
         {
@@ -274,9 +271,8 @@ public:
         string usuarioSql, senhaSql;
         Senha s;
 
-        cout << "Insira o nome do usuario Mysql:" << endl;
-        cin >> usuarioSql;
-        senhaSql=getpass("Insira a senha do usuario Mysql:");	// yes, that's all you need!
+        usuarioSql = getpass("Insira o nome do usuario Mysql:");
+        senhaSql = getpass("Insira a senha do usuario Mysql:"); // yes, that's all you need!
 
         s.setAplicacao();
         try
@@ -322,14 +318,13 @@ public:
         string usuarioSql, senhaSql;
         Senha s;
 
-        cout << "Insira o nome do usuario Mysql:" << endl;
-        cin >> usuarioSql;
-        senhaSql=getpass("Insira a senha do usuario Mysql:");	// yes, that's all you need!
-        s.setAplicacao();
+        usuarioSql = getpass("Insira o nome do usuario Mysql:");
+
+        senhaSql = getpass("Insira a senha do usuario Mysql:");
         try
         {
             driver = get_driver_instance();
-            con = driver->connect("tcp://127.0.0.1:3306", usuarioSql, senhaSql); //Modificar aqui
+            con = driver->connect("tcp://127.0.0.1:3306", usuarioSql, senhaSql);
             stmt = con->createStatement();
             stmt->execute("use GerenciadorSenhas");
 
@@ -367,10 +362,9 @@ public:
     {
         string usuarioSql, senhaSql;
 
-        cout << "Insira o nome do usuario Mysql:" << endl;
-        cin >> usuarioSql;
-        senhaSql=getpass("Insira a senha do usuario Mysql:");	// yes, that's all you need!
+        usuarioSql = getpass("Insira o nome do usuario Mysql:");
 
+        senhaSql = getpass("Insira a senha do usuario Mysql:");
 
         string comando = "mysqldump -u " + usuarioSql + " -p" + senhaSql + " GerenciadorSenhas > BackupSenhas.sql ";
         system((char *)comando.c_str());
@@ -384,9 +378,8 @@ public:
         sql::Statement *stmt;
         string usuarioSql, senhaSql;
 
-        cout << "Insira o nome do usuario Mysql:" << endl;
-        cin >> usuarioSql;
-        senhaSql=getpass("Insira a senha do usuario Mysql:");	// yes, that's all you need!
+        usuarioSql = getpass("Insira o nome do usuario Mysql:");
+        senhaSql = getpass("Insira a senha do usuario Mysql:"); // yes, that's all you need!
 
         try
         {
