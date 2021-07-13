@@ -44,7 +44,6 @@ int main()
         case 9:
             f.restaurarBanco();
             break;
-
         default:
             cout << "Opção inválida" << endl;
         }

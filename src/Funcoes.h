@@ -144,8 +144,8 @@ public:
         cout << "0 - Sair da aplicação" << endl;
         cout << "1 - Ver informações de uso" << endl;
         cout << "2 - Criar o banco de dados" << endl;
-        cout << "3 - Gerar senha" << endl;
-        cout << "4 - Salvar senha existente" << endl;
+        cout << "3 - Gerar senha de uma aplicação" << endl;
+        cout << "4 - Salvar senha externa à aplicação" << endl;
         cout << "5 - Acessar uma senha existente" << endl;
         cout << "6 - Editar uma senha existente" << endl;
         cout << "7 - Excluir uma senha existente" << endl;
@@ -180,13 +180,15 @@ public:
     void instrucoes()
     {
         cout << "Se esta é a sua primeira vez utilizando o gerenciador de senhas," << endl;
-        cout << "selecione a opção de criar o banco de dados para iniciar a utilização." << endl;
+        cout << "selecione a opção de criar o banco de dados para iniciar a utilização," << endl;
+        cout << "ou selecione a opção de restaurar o banco de dados através de um backup." <<endl;
         cout << "Após a criação do banco de dados, você pode criar uma senha para uma determinada " << endl;
-        cout << "aplicação, ou consultar as senhas já existentes. Recomenda-se que para a " << endl;
-        cout << "utilização dessa aplicação, o usuário crie um usuário e senhas próprios para " << endl;
-        cout << "a utilização da aplicação, e não utilize o usuário mysql padrão." << endl;
+        cout << "aplicação, ou adicionar uma senha que você já tenha previamente, ou consultar " << endl; 
+        cout << "as senhas já existentes. Recomenda-se que para a utilização dessa aplicação" << endl;
+        cout << "o usuário crie um usuário e senhas próprios para e não utilize o usuário mysql padrão." << endl;
         cout << "Esses usuário e senha serão utilizados para acessar as informações na aplicação." << endl;
-        cout << "Digite c e aperte enter para continuar." << endl;
+        cout << "ATENÇÃO: AO REALISAR O BACKUP DO BANCO DE DADOS, TODAS AS SENHAS SALVAS PODEM SER " << endl;
+        cout << "ACESSADAS A PARTIR DESSE BACKUP." << endl;
         continuar();
     }
 
@@ -441,6 +443,7 @@ public:
         cout << "Backup realizado com sucesso." << endl;
         continuar();
     }
+    
     void restaurarBanco()
     {
         sql::Driver *driver;
